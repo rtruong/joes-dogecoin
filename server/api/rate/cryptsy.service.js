@@ -5,6 +5,9 @@ var Client = require('node-rest-client').Client,
   _ = require('lodash'),
   API_URL = 'http://pubapi2.cryptsy.com/api.php?method=singlemarketdata&marketid=',
   EXCHANGE_URL = 'https://www.cryptsy.com/markets/view/',
+
+  // NOTE: rlt 20150717 - In a perfect world, this would be programatically built by inspecting the REST API.  In the
+  //                      interest of saving time, this is hard-coded here for now.
   CONFIG = {
     BTC: {
       DASH: {
