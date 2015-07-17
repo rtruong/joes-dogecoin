@@ -35,7 +35,7 @@ var Client = require('node-rest-client').Client,
           resolve({
             fromCurrency: fromCurrency,
             toCurrency: toCurrency,
-            rate: market.buy,
+            rate: 1 / market.buy,
             exchange: EXCHANGE_URL + marketId,
             transaction: 'Buy'
           });
