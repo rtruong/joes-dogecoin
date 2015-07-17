@@ -69,7 +69,7 @@ var Client = require('node-rest-client').Client,
 module.exports = {
   getRate: function (fromCurrency, toCurrency) {
     return new Promise(function (resolve, reject) {
-      var config = _.get(CONFIG, fromCurrency + '.' + toCurrency);
+      var config = _.get(CONFIG, fromCurrency.toUpperCase() + '.' + toCurrency.toUpperCase());
 
       if (config) {
         new Client().get(URL + config.marketId, function (data, response) {
