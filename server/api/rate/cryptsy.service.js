@@ -1,9 +1,10 @@
 'use strict';
 
 var Client = require('node-rest-client').Client,
-  Promise = require('promise'),
+  Conversion = require('./conversion'),
   _ = require('lodash'),
-  URL = 'http://pubapi2.cryptsy.com/api.php?method=singlemarketdata&marketid=',
+  API_URL = 'http://pubapi2.cryptsy.com/api.php?method=singlemarketdata&marketid=',
+  EXCHANGE_URL = 'https://www.cryptsy.com/markets/view/',
   CONFIG = {
     BTC: {
       DASH: {
@@ -35,11 +36,11 @@ var Client = require('node-rest-client').Client,
     },
     LTC: {
       DASH: {
-        marketId: 155,
+        marketId: 214,
         type: 'Buy'
       },
       PPC: {
-        marketId: 28,
+        marketId: 125,
         type: 'Buy'
       }
 
@@ -64,30 +65,49 @@ var Client = require('node-rest-client').Client,
         type: 'Buy'
       }
     }
+  },
+
+  getRate = function (fromCurrency, toCurrency, resolve, reject) {
+    var config = _.get(CONFIG, fromCurrency + '.' + toCurrency);
+
+    if (config) {
+      new Client().get(API_URL + config.marketId, function (data, response) {
+        var market = _.first(_.values(_.get(data, 'return.markets'))),
+          recentTrades = _.get(market, 'recenttrades'),
+          type = config.type,
+          lastTrade = _.chain(recentTrades)
+            .where({ type: type })
+            .first()
+            .value(),
+          price;
+
+        if (lastTrade) {
+          price = +lastTrade.price;
+
+          resolve({
+            fromCurrency: fromCurrency,
+            toCurrency: toCurrency,
+            rate: type === 'Buy' ? (1 / price) : price,
+            exchange: EXCHANGE_URL + market.label.replace('\/', '_'),
+            transaction: type
+          });
+        } else {
+          reject();
+        }
+      });
+    } else {
+      reject();
+    }
   };
 
 module.exports = {
-  getRate: function (fromCurrency, toCurrency) {
-    return new Promise(function (resolve, reject) {
-      var config = _.get(CONFIG, fromCurrency + '.' + toCurrency);
-
-      if (config) {
-        new Client().get(URL + config.marketId, function (data, response) {
-          var recentTrades = _.get(_.first(_.values(_.get(data, 'return.markets'))), 'recenttrades'),
-            lastTrade = _.chain(recentTrades)
-              .where({ type: config.type })
-              .first()
-              .value();
-
-          if (lastTrade) {
-            resolve(+lastTrade.price);
-          } else {
-            reject();
-          }
-        });
-      } else {
-        reject();
-      }
-    });
+  getConversions: function () {
+    return _.reduce(CONFIG, function (ret, toCurrencies, fromCurrency) {
+      return ret.concat(_.chain(_.keys(toCurrencies))
+        .map(function (toCurrency) {
+          return new Conversion(fromCurrency, toCurrency, getRate);
+        })
+        .value());
+    }, []);
   }
 };

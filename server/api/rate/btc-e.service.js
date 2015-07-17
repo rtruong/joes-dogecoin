@@ -1,9 +1,10 @@
 'use strict';
 
 var Client = require('node-rest-client').Client,
-  Promise = require('promise'),
+  Conversion = require('./conversion'),
   _ = require('lodash'),
-  URL = 'https://btc-e.com/api/3/ticker/',
+  API_URL = 'https://btc-e.com/api/3/ticker/',
+  EXCHANGE_URL = 'https://btc-e.com/exchange/',
   MARKET_IDS = {
     BTC: {
       LTC: 'ltc_btc',
@@ -13,34 +14,48 @@ var Client = require('node-rest-client').Client,
       LTC: 'ltc_usd',
       PPC: 'ppc_usd'
     }
+  },
+
+  getRate = function (fromCurrency, toCurrency, resolve, reject) {
+    var marketId = _.get(MARKET_IDS, fromCurrency + '.' + toCurrency);
+
+    if (marketId) {
+      new Client().get(API_URL + marketId, function (data, response) {
+        var market = (function () {
+          var ret;
+
+          try {
+            ret = _.first(_.values(JSON.parse(data.toString('utf8'))));
+          } catch (e) {}
+
+          return ret;
+        })();
+
+        if (market) {
+          resolve({
+            fromCurrency: fromCurrency,
+            toCurrency: toCurrency,
+            rate: market.buy,
+            exchange: EXCHANGE_URL + marketId,
+            transaction: 'Buy'
+          });
+        } else {
+          reject();
+        }
+      });
+    } else {
+      reject();
+    }
   };
 
 module.exports = {
-  getRate: function (fromCurrency, toCurrency) {
-    return new Promise(function (resolve, reject) {
-      var marketId = _.get(MARKET_IDS, fromCurrency + '.' + toCurrency);
-
-      if (marketId) {
-        new Client().get(URL + marketId, function (data, response) {
-          var market = (function () {
-            var ret;
-
-            try {
-              ret = _.first(_.values(JSON.parse(data.toString('utf8'))));
-            } catch (e) {}
-
-            return ret;
-          })();
-
-          if (market) {
-            resolve(market.buy);
-          } else {
-            reject();
-          }
-        });
-      } else {
-        reject();
-      }
-    });
+  getConversions: function () {
+    return _.reduce(MARKET_IDS, function (ret, toCurrencies, fromCurrency) {
+      return ret.concat(_.chain(_.keys(toCurrencies))
+        .map(function (toCurrency) {
+          return new Conversion(fromCurrency, toCurrency, getRate);
+        })
+        .value());
+    }, []);
   }
 };
