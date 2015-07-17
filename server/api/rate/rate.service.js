@@ -4,6 +4,9 @@ var BtcE = require('./btc-e.service'),
   Cryptsy = require('./cryptsy.service'),
   Promise = require('promise'),
   _ = require('lodash'),
+
+  // NOTE: rlt 20150717 - In a perfect world, this would be allowed to be a cyclic graph, but to simplify the
+  //                      path-finding algorithm in the interest of saving time, it is only directed acyclic graph.
   CONVERSIONS = BtcE.getConversions().concat(Cryptsy.getConversions()),
 
   recursiveDfs = function (fromCurrency, toCurrency, ret, previous) {
@@ -48,7 +51,15 @@ module.exports = {
 
       if (conversions.length) {
         resolveRates(conversions).then(function (rates) {
-          resolve(rates);
+          resolve(_.map(rates, function (_rates) {
+            return {
+              markets: _rates,
+
+              rate: _.reduce(_.pluck(_rates, 'rate'), function (rate, _rate) {
+                return rate * _rate
+              }, 1)
+            };
+          }));
         });
       } else {
         resolve(ret);
