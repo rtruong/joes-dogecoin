@@ -5,6 +5,9 @@ var Client = require('node-rest-client').Client,
   _ = require('lodash'),
   API_URL = 'https://btc-e.com/api/3/ticker/',
   EXCHANGE_URL = 'https://btc-e.com/exchange/',
+
+  // NOTE: rlt 20150717 - In a perfect world, this would be programatically built by inspecting the REST API.  In the
+  //                      interest of saving time, this is hard-coded here for now.
   MARKET_IDS = {
     BTC: {
       LTC: 'ltc_btc',
