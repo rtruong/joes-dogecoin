@@ -1,11 +1,14 @@
 'use strict';
 
 angular.module('joesDogecoinApp')
-  .controller('MainCtrl', function ($scope, $http) {
-    $scope.awesomeThings = [];
+  .controller('MainController', function ($scope) {
+    var vm = this;
 
-    $http.get('/api/things').success(function(awesomeThings) {
-      $scope.awesomeThings = awesomeThings;
-    });
+    $scope.fromValue = 200000;
+    $scope.fromCurrency = 'DOGE';
+    vm.refresh = refresh;
 
+    function refresh() {
+      $scope.$broadcast('refresh');
+    }
   });

@@ -1,0 +1,34 @@
+<div class="col-md-12">
+  <table class="table table-striped table-hover table-condensed">
+    <thead>
+      <tr>
+        <th>{{vm.toCurrency}}</th>
+        <th>Rate</th>
+        <th>Trades</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr data-ng-repeat="conversion in vm.conversions">
+        <td>{{conversion.toValue | number:8}}</td>
+        <td>{{conversion.rate | number:8}}</td>
+        <td>
+          <ol>
+            <li data-ng-repeat="trade in conversion.markets">
+              {{trade.transaction}}
+              <span data-ng-if="trade.transaction === 'Buy'">
+                {{trade.toValue}} {{trade.toCurrency}} for {{trade.fromValue}} {{trade.fromCurrency}}
+              </span>
+              <span data-ng-if="trade.transaction === 'Sell'">
+                {{trade.fromValue}} {{trade.fromCurrency}} for {{trade.toValue}} {{trade.toCurrency}}
+              </span>
+              (exchange rate: {{trade.rate | number:8}} {{trade.toCurrency}}/{{trade.fromCurrency}}) at
+              <a href="{{trade.exchange}}" target="_blank" title="{{trade.exchange}}">
+                {{trade.exchange | url:'hostname'}}
+              </a>
+            </li>
+          </ol>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
