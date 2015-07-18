@@ -6,8 +6,8 @@ angular.module('joesDogecoinApp')
       .state('peercoin-tab', {
         parent: 'main',
         url: 'peercoin-tab',
-        templateUrl: 'app/peercoin-tab/peercoin-tab.html',
-        controller: 'PeercoinTabController',
+        templateUrl: 'app/conversion-tab/conversion-tab.html',
+        controller: 'ConversionTabController',
         controllerAs: 'vm'
       });
   });

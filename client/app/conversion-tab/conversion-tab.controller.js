@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('joesDogecoinApp')
-  .controller('PeercoinTabController', function ($scope, RateService) {
+  .controller('ConversionTabController', function ($scope, RateService) {
     var vm = this;
 
     vm.conversions = [];

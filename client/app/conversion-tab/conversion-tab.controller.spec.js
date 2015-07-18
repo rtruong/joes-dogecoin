@@ -1,16 +1,16 @@
 'use strict';
 
-describe('Controller: PeercoinTabCtrl', function () {
+describe('Controller: ConversionTabController', function () {
 
   // load the controller's module
   beforeEach(module('joesDogecoinApp'));
 
-  var PeercoinTabCtrl, scope;
+  var ConversionTabController, scope;
 
   // Initialize the controller and a mock scope
   beforeEach(inject(function ($controller, $rootScope) {
     scope = $rootScope.$new();
-    PeercoinTabCtrl = $controller('PeercoinTabCtrl', {
+    ConversionTabController = $controller('ConversionTabController', {
       $scope: scope
     });
   }));
