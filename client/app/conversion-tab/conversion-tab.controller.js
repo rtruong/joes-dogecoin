@@ -1,12 +1,12 @@
 'use strict';
 
 angular.module('joesDogecoinApp')
-  .controller('ConversionTabController', function ($scope, RateService) {
+  .controller('ConversionTabController', function ($scope, $state, RateService) {
     var vm = this;
 
     vm.conversions = [];
     vm.activate = activate;
-    vm.toCurrency = 'PPC';
+    vm.toCurrency = $state.current.data.toCurrency;
 
     activate();
 

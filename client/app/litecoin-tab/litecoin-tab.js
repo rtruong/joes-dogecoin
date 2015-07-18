@@ -3,14 +3,14 @@
 angular.module('joesDogecoinApp')
   .config(function ($stateProvider) {
     $stateProvider
-      .state('peercoin-tab', {
+      .state('litecoin-tab', {
         parent: 'main',
-        url: 'peercoin-tab',
+        url: 'litecoin-tab',
         templateUrl: 'app/conversion-tab/conversion-tab.html',
         controller: 'ConversionTabController',
         controllerAs: 'vm',
         data: {
-          toCurrency: 'PPC'
+          toCurrency: 'LTC'
         }
       });
   });
