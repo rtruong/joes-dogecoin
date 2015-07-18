@@ -2,6 +2,7 @@
 
 angular.module('joesDogecoinApp', [
   'angular-url-format',
+  'cgBusy',
   'ngCookies',
   'ngResource',
   'ngSanitize',

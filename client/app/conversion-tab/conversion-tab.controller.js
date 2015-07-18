@@ -4,8 +4,9 @@ angular.module('joesDogecoinApp')
   .controller('ConversionTabController', function ($scope, $state, RateService) {
     var vm = this;
 
-    vm.conversions = [];
     vm.activate = activate;
+    vm.conversions = [];
+    vm.promise = null;
     vm.toCurrency = $state.current.data.toCurrency;
 
     activate();
@@ -17,7 +18,9 @@ angular.module('joesDogecoinApp')
     }
 
     function refresh() {
-      RateService.getRates($scope.fromCurrency, vm.toCurrency).then(function (rates) {
+      var promise = vm.promise = RateService.getRates($scope.fromCurrency, vm.toCurrency);
+
+      promise.then(function (rates) {
         vm.conversions = _.map(rates, function (rate) {
           return _.extend({}, rate, {
             toValue: $scope.fromValue * rate.rate,
